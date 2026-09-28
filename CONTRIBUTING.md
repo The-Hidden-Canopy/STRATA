@@ -1,4 +1,4 @@
-# Contributing to Bundle
+# Contributing to STRATA
 
 Contributions should preserve the local-first boundary: the core must remain
 usable without a Hidden Canopy account, hosted service, mandatory network
@@ -13,5 +13,5 @@ Before opening a pull request:
 5. Include provenance and license notices for adapted code.
 
 By submitting a contribution, you agree that it may be distributed under the
-repository's Apache-2.0 license. Bundle welcomes DCO sign-off in commit
+repository's Apache-2.0 license. STRATA welcomes DCO sign-off in commit
 messages (`Signed-off-by: Name <email>`).

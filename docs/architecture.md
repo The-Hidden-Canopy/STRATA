@@ -1,6 +1,6 @@
-# Bundle architecture
+# STRATA architecture
 
-Bundle is a local process with three layers:
+STRATA is a local process with three layers:
 
 ```text
 CLI / loopback web UI

@@ -1,4 +1,4 @@
-"""Command-line interface for the local Bundle service."""
+"""Command-line interface for the local STRATA service."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--db", default=".bundle/bundle.db", help="SQLite database path")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    init = sub.add_parser("init", help="initialize a Bundle database")
+    init = sub.add_parser("init", help="initialize a STRATA database")
     init.add_argument("path", nargs="?", default=".bundle/bundle.db")
 
     project = sub.add_parser("project", help="manage projects")
@@ -152,7 +152,7 @@ def main(argv: list[str] | None = None) -> int:
             _json_print(import_project(db, args.path))
         elif args.command == "serve":
             server = serve(db, args.host, args.port)
-            print(f"Bundle UI listening on http://{args.host}:{args.port}")
+            print(f"STRATA UI listening on http://{args.host}:{args.port}")
             try:
                 server.serve_forever()
             except KeyboardInterrupt:

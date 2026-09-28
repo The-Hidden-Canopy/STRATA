@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/The-Hidden-Canopy/BUNDLE/schemas/bundle-project-1/project.schema.json",
-  "title": "Bundle project export",
+  "$id": "https://github.com/The-Hidden-Canopy/STRATA/schemas/bundle-project-1/project.schema.json",
+  "title": "STRATA project export",
   "type": "object",
   "required": ["project_id", "name", "status", "revision"],
   "properties": {

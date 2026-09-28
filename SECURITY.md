@@ -1,6 +1,6 @@
 # Security policy
 
-Bundle can execute configured commands and call configured HTTP runtimes. Do
+STRATA can execute configured commands and call configured HTTP runtimes. Do
 not register an untrusted runtime against a project that contains sensitive
 files or credentials. The current MVP does not provide a sandbox for child
 processes; deployment-specific isolation is the operator's responsibility.

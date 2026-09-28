@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Participants in the Bundle project are expected to be respectful, constructive,
+Participants in the STRATA project are expected to be respectful, constructive,
 and inclusive. Harassment, discrimination, threats, doxxing, and deliberate
 disruption are not acceptable.
 

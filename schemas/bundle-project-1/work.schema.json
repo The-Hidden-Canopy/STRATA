@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/The-Hidden-Canopy/BUNDLE/schemas/bundle-project-1/work.schema.json",
-  "title": "Bundle work item",
+  "$id": "https://github.com/The-Hidden-Canopy/STRATA/schemas/bundle-project-1/work.schema.json",
+  "title": "STRATA work item",
   "type": "object",
   "required": ["work_id", "project_id", "title", "status", "revision"],
   "properties": {

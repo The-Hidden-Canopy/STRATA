@@ -1,6 +1,6 @@
-# Bundle
+# STRATA
 
-Bundle is a local-first operating system for multi-agent project execution. It turns a project into durable work, lets eligible agents pull that work, and keeps claims, heartbeats, artifacts, and decisions locally inspectable.
+STRATA is a local-first operating system for multi-agent project execution. It turns a project into durable work, lets eligible agents pull that work, and keeps claims, heartbeats, artifacts, and decisions locally inspectable.
 
 The first implementation slice is deliberately standard-library-first:
 
