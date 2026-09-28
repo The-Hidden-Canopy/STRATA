@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17212b">
+  <title>STRATA — Spatial evidence workbench</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">S</div>
+        <div><div class="brand-name">STRATA</div><div class="brand-caption">Spatial evidence workbench</div></div>
+      </div>
+      <div class="project-switcher">
+        <span class="overline">PROJECT</span>
+        <button class="project-button" id="project-button" type="button"><span><strong>Old Town / North Block</strong><small>Historic Downtown</small></span><span aria-hidden="true">⌄</span></button>
+      </div>
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <button class="nav-item is-active" type="button" data-view="overview"><span class="nav-icon">◈</span><span>Overview</span></button>
+        <button class="nav-item" type="button" data-view="timeline"><span class="nav-icon">◷</span><span>Timeline</span></button>
+        <button class="nav-item" type="button" data-view="evidence"><span class="nav-icon">▧</span><span>Evidence</span><span class="nav-count">12</span></button>
+        <button class="nav-item" type="button" data-view="entities"><span class="nav-icon">⌗</span><span>Entities</span><span class="nav-count">48</span></button>
+        <button class="nav-item" type="button" data-view="branches"><span class="nav-icon">⑂</span><span>Branches</span><span class="nav-count">2</span></button>
+        <button class="nav-item" type="button" data-view="exports"><span class="nav-icon">⇩</span><span>Exports</span></button>
+      </nav>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">
+        <div class="section-heading"><span class="overline">ACTIVE LAYERS</span><button class="icon-button" id="reset-layers" type="button" title="Reset layers" aria-label="Reset layers">↺</button></div>
+        <label class="layer-row"><input type="checkbox" data-layer="buildings" checked><span class="layer-swatch swatch-building"></span><span>Buildings</span></label>
+        <label class="layer-row"><input type="checkbox" data-layer="parcels" checked><span class="layer-swatch swatch-parcel"></span><span>Parcels</span></label>
+        <label class="layer-row"><input type="checkbox" data-layer="streets" checked><span class="layer-swatch swatch-street"></span><span>Streets</span></label>
+        <label class="layer-row"><input type="checkbox" data-layer="evidence" checked><span class="layer-swatch swatch-evidence"></span><span>Evidence anchors</span></label>
+      </div>
+      <div class="sidebar-footer">
+        <span class="status-dot"></span><span>Local project</span><span class="footer-version">v0.1</span>
+      </div>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menu-toggle" type="button" title="Toggle navigation" aria-label="Toggle navigation">☰</button>
+        <div class="breadcrumbs"><span>PROJECT</span><span>/</span><strong>OLD TOWN / NORTH BLOCK</strong></div>
+        <div class="topbar-actions"><span class="sync-status"><span class="status-dot"></span><span id="sync-label">Saved locally</span></span><button class="button button-secondary" id="import-button" type="button"><span aria-hidden="true">＋</span> Import</button><button class="button button-primary" id="export-button" type="button"><span aria-hidden="true">⇩</span> Export scene</button><button class="avatar-button" type="button" title="Project menu" aria-label="Project menu">TH</button></div>
+      </header>
+
+      <section class="timeline-band" id="timeline-band" aria-label="Temporal navigation">
+        <div class="timeline-heading"><div><span class="overline">TIME SLICE</span><div class="time-readout"><strong id="time-label">1920</strong><span id="time-detail">01 Jan 1920</span></div></div><div class="timeline-controls"><label class="select-wrap"><span class="sr-only">Branch</span><select id="branch-select"><option value="main">main</option><option value="hypothesis-fire">hypothesis / fire damage</option></select></label><button class="button button-secondary" id="new-branch" type="button"><span aria-hidden="true">⑂</span> New branch</button></div></div>
+        <div class="timeline-track-wrap"><div class="timeline-track"><div class="timeline-progress" id="timeline-progress"></div><input id="time-slider" type="range" min="0" max="3" step="1" value="1" aria-label="Historical time"></div><div class="timeline-ticks" id="timeline-ticks"></div><div class="timeline-events" id="timeline-events"></div></div>
+      </section>
+
+      <section class="workspace-grid" id="overview-view">
+        <section class="viewport-panel panel-shell" aria-label="Spatial scene viewport">
+          <div class="panel-toolbar"><div><span class="overline">SCENE / TEMPORAL VIEW</span><h1 id="scene-title">North Block · 1920</h1></div><div class="toolbar-actions"><div class="segmented-control" role="group" aria-label="Scene view"><button class="segment is-active" type="button" data-mode="topdown">Top-down</button><button class="segment" type="button" data-mode="perspective">Perspective</button></div><button class="icon-button" id="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button><button class="icon-button" id="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">＋</button><button class="icon-button" id="fit-scene" type="button" title="Fit scene" aria-label="Fit scene">⌗</button></div></div>
+          <div class="scene-wrap" id="scene-wrap">
+            <svg class="scene-svg" id="scene-svg" viewBox="0 0 900 540" role="img" aria-label="Temporal site scene"></svg>
+            <div class="scene-overlay scene-location"><span class="crosshair">＋</span><span>North Block</span></div>
+            <div class="scene-overlay scene-scale">50 m</div>
+            <div class="scene-legend"><span><i class="legend-dot observed"></i>Observed</span><span><i class="legend-dot documented"></i>Documented</span><span><i class="legend-dot inferred"></i>Inferred</span><span><i class="legend-dot speculative"></i>Speculative</span></div>
+          </div>
+          <div class="viewport-footer"><span><strong id="entity-count">4</strong> visible entities</span><span class="viewport-hint">Select an element to inspect its evidence chain</span><span><span class="precision-badge">ENU</span> Local frame</span></div>
+        </section>
+
+        <aside class="inspector-panel panel-shell" aria-label="Inspector">
+          <div class="inspector-tabs" role="tablist"><button class="inspector-tab is-active" role="tab" type="button" data-tab="inspector">Inspector</button><button class="inspector-tab" role="tab" type="button" data-tab="evidence">Evidence <span class="tab-badge">4</span></button><button class="inspector-tab" role="tab" type="button" data-tab="changes">Changes</button></div>
+          <div class="inspector-content" id="inspector-content"></div>
+        </aside>
+      </section>
+
+      <section class="evidence-dock panel-shell" id="evidence-view" aria-label="Evidence browser">
+        <div class="dock-heading"><div><span class="overline">EVIDENCE BROWSER</span><h2>Sources informing this slice</h2></div><div class="dock-actions"><label class="search-box"><span aria-hidden="true">⌕</span><input id="evidence-search" type="search" placeholder="Filter sources" aria-label="Filter sources"></label><button class="button button-secondary" id="show-all-evidence" type="button">View all <span aria-hidden="true">→</span></button></div></div>
+        <div class="evidence-table-wrap"><table class="evidence-table"><thead><tr><th>Source</th><th>Type</th><th>Relevant time</th><th>Role in reconstruction</th><th>Confidence</th><th><span class="sr-only">Open</span></th></tr></thead><tbody id="evidence-list"></tbody></table></div>
+      </section>
+
+      <section class="secondary-view" id="entities-view" hidden><div class="page-heading"><div><span class="overline">ENTITY INDEX</span><h2>Persistent place identity</h2></div><button class="button button-primary" type="button" id="create-entity">＋ New entity</button></div><div class="entity-grid" id="entity-grid"></div></section>
+      <section class="secondary-view" id="branches-view" hidden><div class="page-heading"><div><span class="overline">RECONSTRUCTION BRANCHES</span><h2>Competing interpretations</h2></div><button class="button button-primary" type="button" id="new-branch-secondary">⑂ New branch</button></div><div class="branch-list" id="branch-list"></div></section>
+      <section class="secondary-view" id="exports-view" hidden><div class="page-heading"><div><span class="overline">EXPORTS</span><h2>Portable scene packages</h2></div><button class="button button-primary" type="button" id="export-secondary">⇩ Export current scene</button></div><div class="export-list"><div class="export-row"><span class="export-icon">GL</span><span><strong>glTF scene package</strong><small>Renderer-neutral geometry and STRATA IDs</small></span><span class="export-status">Ready</span><button class="icon-button" type="button" title="Export glTF">⇩</button></div><div class="export-row"><span class="export-icon">VT</span><span><strong>VANTA scene package</strong><small>Temporal scene with provenance sidecars</small></span><span class="export-status">Ready</span><button class="icon-button" type="button" title="Export VANTA">⇩</button></div><div class="export-row"><span class="export-icon">AR</span><span><strong>.strata archive</strong><small>Manifest, SQLite metadata, and blobs</small></span><span class="export-status">Ready</span><button class="icon-button" type="button" title="Export archive">⇩</button></div></div></section>
+    </main>
+  </div>
+
+  <dialog class="modal" id="branch-dialog"><form method="dialog" id="branch-form"><div class="modal-heading"><div><span class="overline">NEW BRANCH</span><h2>Explore another interpretation</h2></div><button class="icon-button" value="cancel" type="submit" title="Close" aria-label="Close">×</button></div><label class="field-label">Branch name<input id="branch-name" required placeholder="hypothesis / ..."></label><label class="field-label">Description<textarea id="branch-description" rows="3" placeholder="What changes in this interpretation?"></textarea></label><div class="modal-actions"><button class="button button-secondary" value="cancel" type="submit">Cancel</button><button class="button button-primary" id="create-branch-submit" value="default" type="submit">Create branch</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -4,7 +4,9 @@ import hashlib
 import io
 import json
 import tempfile
+import threading
 import unittest
+import urllib.request
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -16,6 +18,7 @@ from strata.patches import create_patch, project_hash, write_patch
 from strata.spatial import ENU, Geodetic, ecef_to_enu, enu_to_ecef, geodetic_to_ecef
 from strata.temporal import HistoricalDate, HistoricalInterval, interval
 from strata.verify import doctor_project, verify_project
+from strata.web import serve as serve_web
 
 
 class StrataTemporalTests(unittest.TestCase):
@@ -79,6 +82,24 @@ class StrataProjectTests(unittest.TestCase):
         report = doctor_project(self.root)
         self.assertTrue(report["ok"], report)
         self.assertIn("sqlite.integrity", {item["name"] for item in report["checks"]})
+
+    def test_web_surface_serves_frontend_and_project_api(self) -> None:
+        server = serve_web(self.project, "127.0.0.1", 0)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        base = f"http://127.0.0.1:{server.server_port}"
+        try:
+            html = urllib.request.urlopen(base + "/", timeout=2).read().decode("utf-8")
+            javascript = urllib.request.urlopen(base + "/static/app.js", timeout=2).read().decode("utf-8")
+            stylesheet = urllib.request.urlopen(base + "/static/styles.css", timeout=2).read().decode("utf-8")
+            api = json.loads(urllib.request.urlopen(base + "/api/v1/project", timeout=2).read())
+            self.assertIn("Spatial evidence workbench", html)
+            self.assertIn("function init", javascript)
+            self.assertIn("--teal", stylesheet)
+            self.assertEqual(api["default_branch"], "main")
+        finally:
+            server.shutdown()
+            server.server_close()
 
     def test_branch_merge_refuses_semantic_conflict(self) -> None:
         db = self.project.db

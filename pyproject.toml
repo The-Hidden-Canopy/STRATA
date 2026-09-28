@@ -19,6 +19,9 @@ bundle = "bundle.cli:main"
 [tool.setuptools.packages.find]
 include = ["bundle*", "strata*"]
 
+[tool.setuptools.package-data]
+strata = ["frontend/*"]
+
 [tool.bundle]
 schema-version = "bundle-project-1"
 
