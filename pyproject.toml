@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bundle"
+name = "strata"
 version = "0.1.0"
-description = "A local-first multi-agent project execution system"
+description = "A local-first spatial-temporal evidence and reconstruction engine"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
@@ -13,10 +13,15 @@ authors = [{ name = "The Hidden Canopy" }]
 dependencies = []
 
 [project.scripts]
+strata = "strata.cli:main"
 bundle = "bundle.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["bundle*"]
+include = ["bundle*", "strata*"]
 
 [tool.bundle]
 schema-version = "bundle-project-1"
+
+[tool.strata]
+format-major = 1
+format-minor = 0

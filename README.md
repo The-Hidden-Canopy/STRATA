@@ -26,6 +26,27 @@ bundle serve
 
 The UI listens on `http://127.0.0.1:8765` by default. The database lives at `.bundle/bundle.db` and is ignored by Git.
 
+## STRATA project core
+
+STRATA projects are portable local directories containing a human-readable
+`manifest.json`, SQLite metadata, and a content-addressed `blobs/` directory.
+The MVP preserves place identity across time, records evidence and assertions,
+supports competing reconstruction branches, and compiles deterministic,
+renderer-neutral scene packages.
+
+```text
+strata init tonopah-history --title "Historic Downtown"
+strata import map 1888.geojson --project tonopah-history
+strata entity create building --name "Old Hotel" --project tonopah-history
+strata compile --project tonopah-history --time 1920-06-01 --branch main --output build/1920
+strata verify tonopah-history
+strata doctor tonopah-history
+```
+
+The compiled package includes `scene.json`, `scene.gltf`, `citations.json`,
+and `provenance.json`. The legacy `bundle` command remains available for the
+multi-agent execution workflow while STRATA's spatial-temporal CLI matures.
+
 ## Core loop
 
 1. Create a project and phase.

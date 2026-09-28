@@ -42,3 +42,25 @@ an existing local project.
 The web server binds to `127.0.0.1` by default. It is intentionally not a
 remote multi-user service; operators must add an authenticated boundary before
 binding it to a non-loopback interface.
+
+## Spatial-temporal core
+
+The `strata` package adds the specification-facing model. `manifest.json` is
+human-readable and identifies the canonical CRS, local ENU origin, default
+branch, and default time. `project.db` stores normalized entities, states,
+events, sources, observations, assertions, branches, decisions, geometry,
+spatial anchors, provenance, import jobs, and notes. `blobs/` stores immutable
+SHA-256-addressed source bytes and derived assets.
+
+Compilation is deterministic for a project, branch, time, compiler version,
+configuration, and seed. The output keeps STRATA entity/state IDs in
+`scene.json`, `scene.gltf`, `citations.json`, and `provenance.json`. The native
+C++20 target in `cpp/` exposes the stable typed-ID and uncertainty contracts for
+future SQLite, PROJ, GDAL, renderer, and desktop adapters.
+
+The authoritative path is:
+
+```text
+source bytes -> blob hash -> source -> observation -> assertion
+-> branch decision -> temporal state -> compiled scene -> renderer adapter
+```
