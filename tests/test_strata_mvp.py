@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import sqlite3
 import tempfile
 import threading
 import unittest
@@ -16,6 +17,8 @@ from strata.importers import import_file
 from strata.project import StrataProject
 from strata.patches import create_patch, project_hash, write_patch
 from strata.spatial import ENU, Geodetic, ecef_to_enu, enu_to_ecef, geodetic_to_ecef
+from strata.storage import ReadOnlyError
+from strata.store import StrataDatabase
 from strata.temporal import HistoricalDate, HistoricalInterval, interval
 from strata.verify import doctor_project, verify_project
 from strata.web import serve as serve_web
@@ -53,6 +56,63 @@ class StrataProjectTests(unittest.TestCase):
         self.assertEqual(result.source["content_hash"], digest)
         self.assertTrue(self.project.blobs.path_for(digest).is_file())
         self.assertTrue(verify_project(self.root)["ok"])
+
+    def test_storage_is_native_and_versioned(self) -> None:
+        version = self.project.db.conn.execute("PRAGMA user_version").fetchone()[0]
+        tables = {row[0] for row in self.project.db.conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        foreign_keys = {row[2] for row in self.project.db.conn.execute("PRAGMA foreign_key_list(strata_entity)")}
+        self.assertEqual(version, StrataDatabase.SCHEMA_VERSION)
+        self.assertIn("strata_project", tables)
+        self.assertNotIn("projects", tables)
+        self.assertIn("strata_project", foreign_keys)
+
+    def test_read_only_open_does_not_mutate_project(self) -> None:
+        self.project.close()
+        before = json.loads((self.root / "manifest.json").read_text(encoding="utf-8"))["modified_at"]
+        readonly = StrataProject.open(self.root, mode="read")
+        with self.assertRaises(ReadOnlyError):
+            readonly.db.create_entity(self.project.project_id, "building", "Blocked")
+        readonly.close()
+        after = json.loads((self.root / "manifest.json").read_text(encoding="utf-8"))["modified_at"]
+        self.assertEqual(before, after)
+        self.project = StrataProject.open(self.root, mode="write")
+
+    def test_v1_project_migrates_to_native_project_table(self) -> None:
+        legacy = Path(self.temp.name) / "legacy.db"
+        connection = sqlite3.connect(legacy)
+        connection.executescript("""
+            CREATE TABLE projects (
+                project_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+            INSERT INTO projects VALUES ('project_legacy', 'Legacy Town', '', '2020-01-01Z', '2020-01-01Z');
+            PRAGMA user_version = 1;
+        """)
+        connection.close()
+        database = StrataDatabase(legacy)
+        try:
+            self.assertEqual(database.conn.execute("PRAGMA user_version").fetchone()[0], StrataDatabase.SCHEMA_VERSION)
+            row = database.conn.execute("SELECT title FROM strata_project WHERE project_id='project_legacy'").fetchone()
+            self.assertEqual(row[0], "Legacy Town")
+            self.assertFalse(database.conn.execute("SELECT 1 FROM sqlite_master WHERE name='projects'").fetchone())
+        finally:
+            database.close()
+
+    def test_streaming_blobs_and_canonical_hash_ignore_disposable_files(self) -> None:
+        data = (b"strata-stream-" * 1024 * 1024) + b"end"
+        reference = self.project.blobs.put_stream(io.BytesIO(data), media_type="application/octet-stream")
+        self.assertEqual(reference.size, len(data))
+        self.assertTrue(self.project.blobs.verify_streaming(reference.hash)["ok"])
+        copied = self.project.blobs.copy_to(reference.hash, Path(self.temp.name) / "copied.bin")
+        self.assertEqual(copied.read_bytes(), data)
+        before = project_hash(self.root)
+        for directory in ("exports", "previews", "cache", "logs"):
+            (self.root / directory / "noise.txt").write_text("disposable", encoding="utf-8")
+        (self.root / "temporary.partial").write_text("disposable", encoding="utf-8")
+        self.assertEqual(project_hash(self.root), before)
 
     def test_entities_states_assertions_branch_and_scene(self) -> None:
         db = self.project.db

@@ -21,10 +21,11 @@ class StrataProject:
 
     MANIFEST = "manifest.json"
 
-    def __init__(self, root: str | Path, manifest: dict[str, Any], db: StrataDatabase):
+    def __init__(self, root: str | Path, manifest: dict[str, Any], db: StrataDatabase, *, mode: str = "write"):
         self.root = Path(root)
         self.manifest = manifest
         self.db = db
+        self.mode = mode
         self.blobs = BlobStore(self.root / "blobs")
 
     @property
@@ -66,29 +67,34 @@ class StrataProject:
         }
         db = StrataDatabase(target / "project.db")
         db.ensure_project(project_id, title, description)
-        result = cls(target, manifest, db)
+        result = cls(target, manifest, db, mode="write")
         result.save_manifest()
         db.create_branch(project_id, "main", description="Default reconstruction branch")
         return result
 
     @classmethod
-    def open(cls, root: str | Path) -> "StrataProject":
+    def open(cls, root: str | Path, mode: str = "read") -> "StrataProject":
+        if mode not in {"read", "write"}:
+            raise ValueError("project mode must be 'read' or 'write'")
         target = Path(root)
         manifest_path = target / cls.MANIFEST
         if not manifest_path.is_file():
             raise FileNotFoundError(f"not a STRATA project directory: {target}")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        db = StrataDatabase(target / manifest.get("database", "project.db"))
-        return cls(target, manifest, db)
+        db = StrataDatabase(target / manifest.get("database", "project.db"), readonly=mode == "read")
+        return cls(target, manifest, db, mode=mode)
 
     def save_manifest(self) -> None:
+        if self.mode == "read":
+            raise PermissionError("cannot save a read-only STRATA project")
         self.manifest["modified_at"] = utc_now()
         temporary = self.root / f"{self.MANIFEST}.partial"
         temporary.write_text(json.dumps(self.manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         temporary.replace(self.root / self.MANIFEST)
 
     def close(self) -> None:
-        self.save_manifest()
+        if self.mode == "write" and self.db.dirty:
+            self.save_manifest()
         self.db.close()
 
     def __enter__(self) -> "StrataProject":
@@ -96,4 +102,3 @@ class StrataProject:
 
     def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
         self.close()
-

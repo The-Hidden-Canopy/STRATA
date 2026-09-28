@@ -25,8 +25,16 @@ def _json_value(value: str, default: Any) -> Any:
     return json.loads(value)
 
 
-def _project(path: str) -> StrataProject:
-    return StrataProject.open(path)
+def _project(path: str, *, mode: str = "read") -> StrataProject:
+    return StrataProject.open(path, mode=mode)
+
+
+def _command_mode(args: argparse.Namespace) -> str:
+    if args.command in {"entity", "state", "event", "source", "import", "observation", "assertion", "decision", "geometry"}:
+        return "write"
+    if args.command == "branch" and args.branch_command in {"create", "merge"}:
+        return "write"
+    return "read"
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -208,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "serve":
             from .web import serve as serve_project
 
-            project = _project(args.project)
+            project = _project(args.project, mode="read")
             server = serve_project(project, args.host, args.port)
             print(f"STRATA web surface listening on http://{args.host}:{server.server_port}")
             try:
@@ -220,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
                 server.server_close()
                 project.close()
             return 0
-        with _project(getattr(args, "project", ".")) as project:
+        with _project(getattr(args, "project", "."), mode=_command_mode(args)) as project:
             db = project.db
             if args.command == "entity":
                 result = db.create_entity(project.project_id, args.entity_type, args.name) if args.entity_command == "create" else db.list_entities(project.project_id, args.type)

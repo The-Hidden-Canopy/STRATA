@@ -10,7 +10,7 @@ from .project import StrataProject
 
 
 def pack_project(root: str | Path, archive_path: str | Path) -> Path:
-    project = StrataProject.open(root)
+    project = StrataProject.open(root, mode="write")
     try:
         project.db.conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         project.db.conn.commit()

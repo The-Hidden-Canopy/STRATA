@@ -1,69 +1,78 @@
 # STRATA
 
-STRATA is a local-first operating system for multi-agent project execution. It turns a project into durable work, lets eligible agents pull that work, and keeps claims, heartbeats, artifacts, and decisions locally inspectable.
+STRATA is a local-first, renderer-independent spatial-temporal evidence and reconstruction engine for rebuilding the same physical place across time from maps, photographs, terrain, records, 3D geometry, and historical documents.
 
-The first implementation slice is deliberately standard-library-first:
+The project is designed for open-source, offline work:
 
-- Python 3.11+
-- SQLite with WAL mode
-- JSON-shaped local domain records
-- Generic command and HTTP runtime contracts
-- CLI plus a zero-build loopback web UI
+- portable directory-form `strata` projects;
+- human-readable `manifest.json` plus SQLite metadata;
+- SHA-256 content-addressed source blobs;
+- lossless historical dates and uncertain intervals;
+- evidence, observations, assertions, branches, and provenance as separate records;
+- deterministic scene compilation and renderer-neutral exports;
+- a build-free local workbench served on loopback.
 
-No hosted account, database server, JavaScript build, or mandatory telemetry is required.
+No account, hosted database, telemetry, or mandatory cloud service is required.
 
-## Quick start
+## Quick Start
 
 ```text
 python -m venv .venv
 .venv\Scripts\activate       # Windows
 pip install -e .
-bundle init
-bundle project create demo --objective "Ship a small feature"
-bundle project list
-bundle serve
+
+strata init demo.strata --title "Historic Downtown"
+strata import geojson map.geojson --project demo.strata
+strata entity create building --name "Old Hotel" --project demo.strata
+strata compile --project demo.strata --time 1920 --branch main --output build/1920
+strata serve --project demo.strata
 ```
 
-The UI listens on `http://127.0.0.1:8765` by default. The database lives at `.bundle/bundle.db` and is ignored by Git.
+Open the printed loopback URL in a browser. The local workbench provides temporal navigation, scene inspection, evidence browsing, branch selection, and scene export.
 
-## STRATA project core
+## Project Layout
 
-STRATA projects are portable local directories containing a human-readable
-`manifest.json`, SQLite metadata, and a content-addressed `blobs/` directory.
-The MVP preserves place identity across time, records evidence and assertions,
-supports competing reconstruction branches, and compiles deterministic,
-renderer-neutral scene packages.
+A STRATA project is portable and self-contained:
 
 ```text
-strata init tonopah-history --title "Historic Downtown"
-strata import map 1888.geojson --project tonopah-history
-strata entity create building --name "Old Hotel" --project tonopah-history
-strata compile --project tonopah-history --time 1920-06-01 --branch main --output build/1920
-strata verify tonopah-history
-strata doctor tonopah-history
+demo.strata/
+  manifest.json
+  project.db
+  blobs/       # content-addressed source bytes
+  previews/    # disposable previews
+  exports/     # generated packages
+  cache/       # disposable cache
+  logs/        # local diagnostics
 ```
 
-The compiled package includes `scene.json`, `scene.gltf`, `citations.json`,
-and `provenance.json`. The legacy `bundle` command remains available for the
-multi-agent execution workflow while STRATA's spatial-temporal CLI matures.
+The authoritative SQLite schema is owned by STRATA and is migration-versioned. Existing v1 projects migrate to the native `strata_project` table when opened for writing. Read-only inspection refuses unsupported or unmigrated schemas instead of relabeling them.
 
-## Core loop
+## Core Model
 
-1. Create a project and phase.
-2. Register an agent with capabilities and lane preferences.
-3. Add work items and dependencies.
-4. Pull the highest-ranked eligible work.
-5. Claim it with an expected revision.
-6. Heartbeat while executing.
-7. Check in a result, blockers, or artifacts.
+```text
+source bytes
+    |
+content-addressed blob
+    |
+source -> source region -> observation -> assertion
+                                      |
+                              branch decision
+                                      |
+                             temporal entity state
+                                      |
+                              compiled scene package
+```
 
-Claims are leases. A missing heartbeat expires a claim; side-effecting work enters reconciliation instead of being blindly retried.
+Evidence is not historical truth by itself. Assertions retain their support and uncertainty, and branches preserve competing interpretations without overwriting the base project.
 
 ## Development
 
 ```text
 python -m unittest discover -s tests -v
-python -m compileall -q bundle
+python -m compileall -q strata
+cmake -S . -B build/cmake
+cmake --build build/cmake --config Release
+ctest --test-dir build/cmake -C Release --output-on-failure
 ```
 
-See [docs/architecture.md](docs/architecture.md) for the persistence and scheduling model. The product boundary and longer-term roadmap are captured in the engineering specification supplied with this repository.
+See [docs/architecture.md](docs/architecture.md) for the storage and reconstruction model. The repository-aligned engineering plan is the roadmap for migrations, native-core work, geometry, evidence registration, and renderer interoperability.
