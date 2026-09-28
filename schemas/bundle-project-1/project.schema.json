@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/The-Hidden-Canopy/BUNDLE/schemas/bundle-project-1/project.schema.json",
+  "title": "Bundle project export",
+  "type": "object",
+  "required": ["project_id", "name", "status", "revision"],
+  "properties": {
+    "project_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "name": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "objective": {"type": "string"},
+    "success_definition": {"type": "string"},
+    "status": {"enum": ["draft", "planning", "active", "paused", "blocked", "complete", "archived"]}
+  },
+  "additionalProperties": true
+}

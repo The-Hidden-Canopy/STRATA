@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bundle"
+version = "0.1.0"
+description = "A local-first multi-agent project execution system"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "The Hidden Canopy" }]
+dependencies = []
+
+[project.scripts]
+bundle = "bundle.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bundle*"]
+
+[tool.bundle]
+schema-version = "bundle-project-1"

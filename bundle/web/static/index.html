@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>Bundle — Project command center</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">B</div>
+        <div><div class="brand-name">Bundle</div><div class="brand-caption">Project command center</div></div>
+      </div>
+      <nav class="nav-list" aria-label="Workspace">
+        <a class="nav-link is-active" href="#overview"><span class="nav-icon">⌂</span> Overview</a>
+        <a class="nav-link" href="#work"><span class="nav-icon">▤</span> Work</a>
+        <a class="nav-link" href="#agents"><span class="nav-icon">✦</span> Agents</a>
+        <a class="nav-link" href="#attention"><span class="nav-icon">!</span> Attention</a>
+      </nav>
+      <div class="sidebar-section">
+        <div class="section-label-row"><span class="section-label">Projects</span><button class="icon-button" id="sidebar-refresh" type="button" aria-label="Refresh projects" title="Refresh">↻</button></div>
+        <div class="project-list" id="project-list" aria-live="polite"></div>
+      </div>
+      <div class="sidebar-footer"><span class="online-dot" aria-hidden="true"></span><span>Local core online</span><span class="footer-version">v0.1</span></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumbs" aria-label="Current location"><span>Workspace</span><span class="breadcrumb-slash">/</span><strong id="topbar-project-name">Loading project…</strong></div>
+        <div class="topbar-actions"><span class="last-updated" id="last-updated">Waiting for sync</span><button class="button button-quiet" id="topbar-refresh" type="button"><span aria-hidden="true">↻</span> Refresh</button></div>
+      </header>
+      <main class="dashboard" id="overview">
+        <div class="error-banner is-hidden" id="error-banner" role="alert"></div>
+        <section class="hero-card" aria-labelledby="project-title">
+          <div class="hero-content"><p class="eyebrow">Project command center</p><h1 id="project-title">Loading project…</h1><p class="hero-objective" id="project-objective">Bundle is syncing the local project state.</p><div class="hero-meta"><span class="status-pill status-active" id="project-status">Active</span><span class="hero-id" id="project-id">Local project</span></div></div>
+          <div class="hero-visual" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-core">B</div><span class="hero-star star-one">✦</span><span class="hero-star star-two">·</span><span class="hero-star star-three">·</span></div>
+        </section>
+        <section class="stats-grid" aria-label="Project summary">
+          <article class="stat-card stat-blue"><div class="stat-heading"><span class="stat-icon">▤</span><span>Ready work</span></div><strong class="stat-value" id="stat-ready">—</strong><span class="stat-note">Eligible for a pull</span></article>
+          <article class="stat-card stat-violet"><div class="stat-heading"><span class="stat-icon">↗</span><span>In flight</span></div><strong class="stat-value" id="stat-active">—</strong><span class="stat-note">Active claims</span></article>
+          <article class="stat-card stat-teal"><div class="stat-heading"><span class="stat-icon">✦</span><span>Agents</span></div><strong class="stat-value" id="stat-agents">—</strong><span class="stat-note">Project members</span></article>
+          <article class="stat-card stat-amber"><div class="stat-heading"><span class="stat-icon">!</span><span>Attention</span></div><strong class="stat-value" id="stat-attention">—</strong><span class="stat-note">Items needing a human</span></article>
+        </section>
+        <div class="content-grid">
+          <section class="panel work-panel" id="work" aria-labelledby="work-heading">
+            <div class="panel-heading"><div><p class="eyebrow">Shared work pool</p><h2 id="work-heading">Work moving through the project</h2></div><span class="count-label" id="work-count">—</span></div>
+            <div class="filter-row" role="toolbar" aria-label="Filter work"><button class="filter-button is-active" data-filter="all" type="button">All work</button><button class="filter-button" data-filter="ready" type="button">Ready</button><button class="filter-button" data-filter="active" type="button">In flight</button><button class="filter-button" data-filter="blocked" type="button">Blocked</button></div>
+            <div class="work-list" id="work-list" aria-live="polite"></div>
+          </section>
+          <aside class="right-rail">
+            <section class="panel" id="agents" aria-labelledby="agents-heading"><div class="panel-heading panel-heading-compact"><div><p class="eyebrow">Crew</p><h2 id="agents-heading">Agents</h2></div><span class="count-label" id="agent-count">—</span></div><div class="agent-list" id="agent-list" aria-live="polite"></div></section>
+            <section class="panel activity-panel" aria-labelledby="activity-heading"><div class="panel-heading panel-heading-compact"><div><p class="eyebrow">Timeline</p><h2 id="activity-heading">Recent activity</h2></div></div><div class="activity-list" id="activity-list" aria-live="polite"></div></section>
+          </aside>
+        </div>
+        <section class="panel attention-panel" id="attention" aria-labelledby="attention-heading"><div class="panel-heading panel-heading-compact"><div><p class="eyebrow">Human steering</p><h2 id="attention-heading">Attention</h2></div><span class="count-label" id="attention-count">—</span></div><div id="attention-list" aria-live="polite"></div></section>
+      </main>
+    </div>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

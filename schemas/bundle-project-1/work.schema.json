@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/The-Hidden-Canopy/BUNDLE/schemas/bundle-project-1/work.schema.json",
+  "title": "Bundle work item",
+  "type": "object",
+  "required": ["work_id", "project_id", "title", "status", "revision"],
+  "properties": {
+    "work_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "status": {"type": "string"},
+    "priority": {"type": "integer"},
+    "lane": {"type": "string"},
+    "required_capabilities": {"type": "array", "items": {"type": "string"}},
+    "acceptance_criteria": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
